@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK17'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Fetching source code...'
+                checkout scm
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                echo 'Compiling Java program...'
+                sh 'javac ArmstrongNumbers.java'
+            }
+        }
+
+        stage('Build Verification') {
+            steps {
+                echo 'Checking generated class file...'
+                sh 'ls -l ArmstrongNumbers.class'
+            }
+        }
+
+        stage('Test Execution') {
+            steps {
+                echo 'Running Java program...'
+                sh 'java ArmstrongNumbers'
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: '*.class', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline executed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
